@@ -1,0 +1,370 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BAMOSIAL — Portail des liens applicatifs & environnements RESYTAL</title>
+  <meta name="color-scheme" content="dark" />
+  <style>
+    :root{
+      --bg1:#05070f; --bg2:#0a0f1f;
+      --glass: rgba(255,255,255,.06);
+      --glass-strong: rgba(255,255,255,.10);
+      --stroke: rgba(255,255,255,.14);
+      --fg:#e7ecf5; --muted:#9fb0c9;
+      --accent:#69b3ff; --accent2:#22d3ee; --ring:#9cc7ff;
+      --radius:16px; --ring-strong: 0 0 0 2px rgba(156,199,255,.55);
+      --shadow: 0 20px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--fg);
+      font: 16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:
+        radial-gradient(1200px 700px at 15% -10%, #183057 0%, transparent 60%),
+        radial-gradient(1200px 700px at 110% 10%, #0a1a34 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      position:relative; overflow-x:hidden;
+    }
+    .aurora{position:fixed; inset:-20vmax; pointer-events:none; z-index:0;
+      background: conic-gradient(from 180deg at 50% 50%, rgba(73,154,255,.14), rgba(34,211,238,.10), rgba(73,154,255,.14));
+      filter: blur(60px) saturate(140%); animation: drift 18s linear infinite; opacity:.8}
+    @keyframes drift{0%{transform:rotate(0) scale(1.05)}50%{transform:rotate(180deg) scale(1.1)}100%{transform:rotate(360deg) scale(1.05)}}
+
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(10,12,24,.65), rgba(10,12,24,.40));
+      border-bottom:1px solid var(--stroke);
+    }
+    .wrap{max-width:1200px; margin:0 auto; padding:16px 18px; position:relative; z-index:1}
+    .brand{
+      display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+      font-weight:900; letter-spacing:.8px; font-size:clamp(28px,4vw,40px);
+      background: linear-gradient(90deg,#eaf2ff,#9bd8ff 40%,#9ff8ff 70%,#eaf2ff);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      text-shadow:0 0 24px rgba(105,179,255,.25)
+    }
+    .brand-desc{ color:var(--muted); font-size:14px; font-weight:500 }
+    h1{margin:6px 0 2px; font-size: clamp(20px,2.4vw,28px)}
+    .sub{color:var(--muted); font-size:14px}
+
+    main{ padding: 22px 18px }
+    .panel{
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      box-shadow: var(--shadow); border-radius: var(--radius);
+      backdrop-filter: blur(14px); padding:18px; margin-bottom:16px;
+    }
+    .section-title{margin:6px 0 12px; font-size:18px; letter-spacing:.2px}
+
+    .grid-2{ display:grid; gap:14px; grid-template-columns:1fr }
+    @media (min-width: 900px){ .grid-2{ grid-template-columns:1fr 1fr } }
+    .links-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap:12px; }
+    .btnlink{
+      display:flex; align-items:center; justify-content:center; text-align:center; min-height:56px;
+      padding:12px 10px; color:var(--fg); text-decoration:none; border-radius:12px;
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--glass-strong), rgba(255,255,255,.05));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+      transition: transform .08s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .btnlink:hover,.btnlink:focus-visible{ border-color:rgba(153,197,255,.55); box-shadow:0 10px 24px rgba(105,179,255,.18); outline:2px solid var(--ring); outline-offset:2px; transform:translateY(-1px) }
+    .btnlink.badge-red{ background:linear-gradient(180deg, rgba(255,82,82,.2), rgba(255,82,82,.1)); }
+    .btnlink.badge-blue{ background:linear-gradient(180deg, rgba(80,120,255,.2), rgba(80,120,255,.1)); }
+
+    /* Sélecteur Env/App */
+    .form-grid{ display:grid; gap:16px; grid-template-columns: 1fr }
+    @media (min-width: 900px){ .form-grid{ grid-template-columns: 1fr 1fr auto; align-items: start } }
+    fieldset{ border:1px solid var(--stroke); border-radius:14px; padding:12px;
+      background: linear-gradient(180deg, var(--glass), rgba(255,255,255,.03)); backdrop-filter: blur(12px) }
+    legend{ padding:0 8px; color:var(--muted); font-size:13px }
+    .radios{ display:grid; gap:10px }
+    .radio{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:10px 12px; border-radius:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid var(--stroke);
+      transition: transform .06s ease, border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .radio:hover{ border-color: rgba(156,199,255,.55); box-shadow: 0 6px 18px rgba(105,179,255,.15); transform: translateY(-1px) }
+    .radio input{ accent-color: var(--accent) }
+    .radio:has(input:checked){
+      border-color: rgba(98,210,255,.7);
+      background: linear-gradient(180deg, rgba(34,211,238,.14), rgba(34,211,238,.05));
+      box-shadow: inset 0 0 0 1px rgba(34,211,238,.25), 0 8px 26px rgba(34,211,238,.18);
+    }
+
+    /* Combobox custom (dropdown) */
+    .visually-hidden{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0 }
+    .combo{ position:relative }
+    .combo-btn{
+      width:100%; text-align:left; font:inherit; color:var(--fg);
+      padding:11px 38px 11px 12px; border-radius:12px; border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); backdrop-filter: blur(8px);
+      transition: box-shadow .15s ease, border-color .15s ease, transform .06s ease;
+      cursor:pointer;
+    }
+    .combo-btn:hover{ border-color: rgba(156,199,255,.55); box-shadow: 0 8px 24px rgba(105,179,255,.18); transform: translateY(-1px) }
+    .combo-btn:focus-visible{ outline:none; box-shadow: var(--ring-strong) }
+    .combo-btn::after{
+      content:"▾"; position:absolute; right:12px; top:50%; transform:translateY(-50%); pointer-events:none;
+      opacity:.9;
+    }
+    .combo-list{
+      position:absolute; left:0; right:0;
+      background: #1f2433; color:var(--fg);
+      border:1px solid var(--stroke); border-radius:12px; box-shadow: var(--shadow);
+      max-height:260px; overflow:auto; padding:6px 0; z-index:20; display:none;
+    }
+    .combo-list.open{ display:block }
+    .combo-option{
+      padding:10px 12px; cursor:pointer;
+    }
+    .combo-option[aria-selected="true"], .combo-option:hover{
+      background: rgba(96,165,250,.18);
+    }
+    .combo-list.drop-up{ bottom: calc(100% + 8px) }
+    .combo-list.drop-down{ top: calc(100% + 8px) }
+    .footer{ color:var(--muted); font-size:13px; margin-top:10px }
+  </style>
+</head>
+<body>
+  <div class="aurora" aria-hidden="true"></div>
+
+  <header>
+    <div class="wrap">
+      <div class="brand">
+        BAMOSIAL
+        <span class="brand-desc">Bureau d’Assistance à la Maîtrise d’Ouvrage du Système d’Information de l’Alimentation</span>
+      </div>
+      <h1>Portail des liens applicatifs & environnements <span style="color:var(--accent)">RESYTAL</span></h1>
+      <p class="sub">Sélectionnez un environnement pour ouvrir une application, ou utilisez les raccourcis ci-dessous.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Liens rapides -->
+    <section class="panel">
+      <h2 class="section-title">Liens rapides</h2>
+      <div class="grid-2">
+        <div class="links-grid">
+          <a class="btnlink" href="https://alim.national.agri/spiral/" target="_blank" rel="noopener">SPIRAL (Production)</a>
+          <a class="btnlink" href="http://avis-situation-sirene.insee.fr/" target="_blank" rel="noopener">INSEE</a>
+          <a class="btnlink" href="https://portail.agricoll.agriculture.gouv.fr/" target="_blank" rel="noopener">AGRICOLL</a>
+          <a class="btnlink" href="http://www.formco.agriculture.gouv.fr/" target="_blank" rel="noopener">FORMCO</a>
+          <a class="btnlink" href="https://alim.agriculture.gouv.fr/spiral-m/" target="_blank" rel="noopener">SPIRAL mobile (Prod)</a>
+          <a class="btnlink" href="https://alim.national.agri/sigal_administration/" target="_blank" rel="noopener">SIGAL WEBMIN</a>
+          <a class="btnlink" href="https://data.agriculture.gouv.fr/BOE/CMC/" target="_blank" rel="noopener">CMC (compte DEDAL)</a>
+          <a class="btnlink" href="http://agriculture.gouv.fr/etablissements-agrees" target="_blank" rel="noopener">alim’agri (Établissements)</a>
+          <a class="btnlink" href="https://usager.national.agri/interfacebdnu/" target="_blank" rel="noopener">BDNU</a>
+          <a class="btnlink" href="https://annuaire-pprd.agricoll.national.agri/" target="_blank" rel="noopener">AGRICOLL PréProd</a>
+          <a class="btnlink" href="https://ged.national.agri/gedsi/nxpath/default/Domaine%20DGAL/workspaces/RESYTAL/RESYTAL%20-%20Formation@view_documents?tabIds=:&old_conversationId=0NXMAIN3" target="_blank" rel="noopener">GEDSI</a>
+          <a class="btnlink" href="https://centredeservices.ep.national.agri/" target="_blank" rel="noopener">Centre de service (IWS)</a>
+          <a class="btnlink" href="http://e-agre.agriculture.gouv.fr/" target="_blank" rel="noopener">E-agre</a>
+          <a class="btnlink" href="https://alim.agriculture.gouv.fr/epiphyt/" target="_blank" rel="noopener">Epiphyt</a>
+          <a class="btnlink" href="http://intranet.national.agri/SI2A-et-valorisation-des-donnees" target="_blank" rel="noopener">Intranet BEAD</a>
+          <a class="btnlink" href="http://intranet.national.agri/Foire-aux-Questions-Animaux-de" target="_blank" rel="noopener">FAQ BEAD</a>
+        </div>
+
+        <div class="links-grid">
+          <a class="btnlink" href="https://assistance.dsa.national.agri/otrs/index.pl?Action=AgentTicketQueue" target="_blank" rel="noopener">OTRS</a>
+          <a class="btnlink" href="https://www.google.fr" target="_blank" rel="noopener">Google</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- JIRA / Confluence -->
+    <section class="panel">
+      <h2 class="section-title">JIRA & espaces Confluence</h2>
+      <div class="grid-2">
+        <div class="links-grid">
+          <a class="btnlink" href="https://orion.agriculture/jira/projects/SI2A" target="_blank">JIRA — SI2A</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/projects/APPRO" target="_blank">JIRA — APPROBATIONS</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/projects/TDC" target="_blank">JIRA — Transparence des contrôles</a>
+          <a class="btnlink" href="https://orion.agriculture/confluence/display/RESYTAL/Accueil+RESYTAL" target="_blank">Confluence — Accueil RESYTAL</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/projects/PGI" target="_blank">JIRA — PGI</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/projects/ARQ" target="_blank">JIRA — ARQ</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/projects/DEDALV4" target="_blank">JIRA — DEDAL</a>
+          <a class="btnlink" href="https://orion.agriculture/confluence/display/SI2A/SI2A" target="_blank">Confluence — SI2A</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/secure/RapidBoard.jspa?rapidView=763" target="_blank">JIRA — METHODES</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/projects/VCONSO" target="_blank">JIRA — VCONSO</a>
+          <span></span>
+          <a class="btnlink" href="https://orion.agriculture/confluence/display/SI2A/Espace+projet+DAL-BMOSIA" target="_blank">Confluence — DAL/BMOSIA</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/secure/RapidBoard.jspa?rapidView=772" target="_blank">JIRA — SUITES</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/projects/SPIR" target="_blank">JIRA — SPIRAL</a>
+          <span></span>
+          <a class="btnlink" href="https://orion.agriculture/confluence/display/CPR/Espace+collaboratif+des+COSIR" target="_blank">Confluence — Espace COSIR</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/projects/SIALPOR" target="_blank">JIRA — PORTAIL</a>
+          <a class="btnlink" href="https://orion.agriculture/jira/projects/NMA" target="_blank">JIRA — NMA</a>
+        </div>
+
+        <div class="links-grid">
+          <a class="btnlink badge-red" href="https://orion.agriculture/jira/projects/FDRSIAL25/" target="_blank">FDR 2025</a>
+          <a class="btnlink badge-blue" href="https://orion.agriculture/jira/projects/FDRSIAL26/" target="_blank">FDR 2026</a>
+          <a class="btnlink badge-blue" href="https://orion.agriculture/jira/secure/Dashboard.jspa?selectPageId=56301" target="_blank">FDR 2026 — Exigences</a>
+          <a class="btnlink badge-blue" href="https://orion.agriculture/jira/secure/Dashboard.jspa?selectPageId=56500" target="_blank">FDR 2026 — Périmètres</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sélecteur ENV/APPS -->
+    <section class="panel" id="selector">
+      <form name="formulaire2" class="form-grid" onsubmit="return false;">
+        <fieldset>
+          <legend>Environnements</legend>
+          <div id="env-radios" class="radios" role="radiogroup" aria-label="Choisir un environnement"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Applications</legend>
+          <!-- select de secours (caché visuellement) -->
+          <select id="app" name="Application" class="visually-hidden" aria-hidden="true" tabindex="-1"></select>
+
+          <!-- Combobox visible -->
+          <div class="combo" id="app-combo">
+            <button type="button" class="combo-btn" id="comboBtn"
+              role="combobox" aria-haspopup="listbox" aria-expanded="false"
+              aria-controls="comboList">Portail RESYTAL</button>
+            <ul class="combo-list drop-down" id="comboList" role="listbox" aria-label="Applications"></ul>
+          </div>
+        </fieldset>
+
+        <div><button id="openBtn" type="button">Ouvrir</button></div>
+      </form>
+      <p class="footer">Version modernisée base v1.0</p>
+    </section>
+  </main>
+
+  <script>
+    // ===== Données (valider2) =====
+    const ENV_NAMES = [
+      "Formation formateur","Formation stagiaire","Intégration fonctionnelle",
+      "Pré-production fonctionnelle","Auto-formation","Qualification","Production"
+    ];
+    const APP_NAMES = [
+      "Analyse de risque","Approbations","Biovigilance","DEDAL - Valorisation des données","GAO",
+      "Habilitations","Méthodes","Nomenclatures","Portail RESYTAL",
+      "Prog. et Gest. des inspections","SI2A - Inspection en abattoir","SI Intrants",
+      "Structures et ressources","Suites et Consignations","Usagers","Vision consolidée"
+    ];
+    const EnvApplication2 = [];
+    EnvApplication2[0] = ['https://formation.alim.national.agri/sial-analyse-risque-formateur/','https://formation.alim.national.agri/sial-approbations-formateur/','','','',
+      'https://formation.alim.national.agri/sial-habilitations-formateur','https://formation.alim.national.agri/sial-methodes-formateur/','https://formation.alim.national.agri/sial-nomenclatures-formateur','https://formation.alim.national.agri/portail-ff/','https://formation.alim.national.agri/sial-inspections-formateur/','https://formation.alim.national.agri/sial-si2a-formateur/','',
+      'https://formation.alim.national.agri/sial-structures-ressources-formateur/','https://formation.alim.national.agri/sial-suites-formateur/','https://formation.alim.national.agri/sial-usagers-formateur/','https://formation.alim.agriculture.gouv.fr/sial-op-consolidees-formateur/'];
+    EnvApplication2[1] = ['https://formation.alim.national.agri/sial-analyse-risque-stagiaire/','https://formation.alim.national.agri/sial-approbations-stagiaire/','','','',
+      'https://formation.alim.national.agri/sial-habilitations-stagiaire/','https://formation.alim.national.agri/sial-methodes-stagiaire/ ','https://formation.alim.national.agri/sial-nomenclatures-stagiaire/ ','https://formation.alim.national.agri/portail-fs/','https://formation.alim.national.agri/sial-inspections-stagiaire/','https://formation.alim.national.agri/sial-si2a-stagiaire/','',
+      'https://formation.alim.national.agri/sial-structures-ressources-stagiaire/','https://formation.alim.national.agri/sial-suites-stagiaire/','https://formation.alim.national.agri/sial-usagers-stagiaire/ ','https://formation.alim.agriculture.gouv.fr/sial-op-consolidees-stagiaire/'];
+    EnvApplication2[2] = ['https://int-gl-apdal-v04.exploit.auzeville.agri:60181/sial-analyse-risque-int-tech-fonc/','https://int-gl-apdal-v04.exploit.auzeville.agri:60281/sial-approbations-int-tech-fonc/','https://int-gl-apdal-v04.exploit.auzeville.agri:60381/sial-biovigilance-int-tech-fonc/','','',
+      'http://int-gl-apdal-v04.exploit.auzeville.agri:60480/sial-habilitations-webapp-int-tech-fonc/','https://int-gl-apdal-v04.exploit.auzeville.agri:60581/sial-methodes-int-tech-fonc/','https://int-gl-apdal-v04.exploit.auzeville.agri:60681/sial-nomenclatures-int-tech-fonc/','https://int-gl-apdal-v04.exploit.auzeville.agri:60881/sial-portail-int-tech-fonc/','https://int-gl-apdal-v04.exploit.auzeville.agri:60481/sial-inspections-webapp-int-tech-fonc/','http://int-gl-apdal-v04.exploit.auzeville.agri:60980/sial-si2a-webapp-int-tech-fonc/','https://int-gl-apdal-v04.exploit.auzeville.agri:60481/sial-intrants-int-tech-fonc/','https://int-gl-apdal-v04.exploit.auzeville.agri:60981/sial-structures-ressources-int-tech-fonc/','https://int-gl-apdal-v04.exploit.auzeville.agri:61081/sial-suites-webapp-int-tech-fonc/','http://int-gl-apdal-v04.exploit.auzeville.agri:61080/sial-usagers-webapp-int-tech-fonc','https://int-gl-apdal-v04.exploit.auzeville.agri:60081/sial-op-consolidees-int-tech-fonc/'];
+    EnvApplication2[3] = ['https://alim-pprd.national.agri/sial-analyse-risque-pprd-fct/','https://alim-pprd.national.agri/wsial-appro-pf','','','',
+      'https://alim-pprd.national.agri/sial-hab-pf','https://alim-pprd.national.agri/wsial-methodes-pf','https://alim-pprd.national.agri/sial-nom-pf','https://alim-pprd.national.agri/sial-por-ihm-pf/','https://alim-pprd.national.agri/wsial-inspections-pf','','','https://alim-pprd.national.agri/sial-structures-ressources-pprd-fct/','https://alim-pprd.national.agri/sial-suites-pprd-fct/','https://alim-pprd.national.agri/sial-usagers-pf','https://alim-pprd.national.agri/sial-op-consolidees-pprd-fct/'];
+    EnvApplication2[4] = ['https://formation.alim.national.agri/sial-analyse-risque-autoform/','https://formation.alim.national.agri/approbations-fa/','https://formation.alim.agriculture.gouv.fr/sial-biovigilance-autoform/','',
+      'https://formation.alim.national.agri/gao-gos-autoform/','https://formation.alim.national.agri/habilitations-fa/','https://formation.alim.national.agri/wsial-meth-ihm-fa/','https://formation.alim.national.agri/nom-ihm-fa/','https://formation.alim.agriculture.gouv.fr/portail-fa/','https://formation.alim.agriculture.gouv.fr/inspections-fa/','https://formation.alim.national.agri/sial-si2a-autoform/','',
+      'https://formation.alim.national.agri/struct-fa/','https://formation.alim.agriculture.gouv.fr/sial-suites-autoform/','https://formation.alim.agriculture.gouv.fr/usagers-fa/','https://formation.alim.national.agri/opcons-ihm-fa/'];
+    EnvApplication2[5] = ['https://alim-pprd.national.agri/sial-analyse-risque-qlf/','https://alim-pprd.national.agri/sial-approbations-qlf/','https://alim-pprd.agriculture.gouv.fr/biovigilance/','https://data-pprd.agriculture.gouv.fr/bobi/','',
+      'https://alim-pprd.agriculture.gouv.fr/sial-habilitations-qlf/','https://alim-pprd.national.agri/wsial-met-webapp-qf/','https://alim-pprd.agriculture.gouv.fr/nomenclatures/','https://alim-pprd.agriculture.gouv.fr/portail/','https://alim-pprd.national.agri/wsial-pgi2-ihm-qf/','https://alim-pprd.national.agri/sial-si2a-qf','','','https://alim-pprd.national.agri/sial-suites/','https://alim-pprd.national.agri/usagers/','https://alim-pprd.agriculture.gouv.fr/sial-op-consolidees-qualif/'];
+    EnvApplication2[6] = ['https://alim.national.agri/sial-analyse-risque/','https://alim.agriculture.gouv.fr/approbations/','https://alim.agriculture.gouv.fr/sial-biovigilance/','https://data.agriculture.gouv.fr/bobi/','https://alim.national.agri/dgal-gaogos/','https://alim.national.agri/habilitations/','https://alim.national.agri/wsial-meth-ihm/','https://alim.agriculture.gouv.fr/nomenclatures/','https://alim.agriculture.gouv.fr/portail/','https://alim.agriculture.gouv.fr/inspections/','https://alim.national.agri/sial-si2a/','https://alim.national.agri/sial-intrants-webapp-nomade/','https://alim.agriculture.gouv.fr/structures-ressources/','https://alim.agriculture.gouv.fr/sial-suites/','https://alim.agriculture.gouv.fr/usagers/','https://alim.agriculture.gouv.fr/sial-op-consolidees/'];
+
+    // Build UI
+    const envRadios = document.getElementById('env-radios');
+    const nativeSelect = document.getElementById('app');
+    const combo = document.getElementById('app-combo');
+    const comboBtn = document.getElementById('comboBtn');
+    const comboList = document.getElementById('comboList');
+    const openBtn = document.getElementById('openBtn');
+
+    // Environnements
+    ENV_NAMES.forEach((name, i)=>{
+      const label = document.createElement('label');
+      label.className = 'radio';
+      label.innerHTML = `<input type="radio" name="Env" value="${i}" ${i===6?'checked':''} />
+                         <span>${name}</span>`;
+      envRadios.appendChild(label);
+    });
+
+    // Apps -> native select + custom list
+    APP_NAMES.forEach((n,i)=>{
+      const opt = document.createElement('option'); opt.value=i; opt.textContent=n;
+      if(i===8) opt.selected = true; // Portail RESYTAL par défaut
+      nativeSelect.appendChild(opt);
+
+      const li = document.createElement('li');
+      li.className = 'combo-option';
+      li.setAttribute('role','option');
+      li.dataset.index = i;
+      li.textContent = n;
+      if(i===nativeSelect.selectedIndex) li.setAttribute('aria-selected','true');
+      comboList.appendChild(li);
+    });
+    comboBtn.textContent = APP_NAMES[nativeSelect.selectedIndex];
+
+    // Helpers
+    function closeList(){ comboList.classList.remove('open','drop-down','drop-up'); comboBtn.setAttribute('aria-expanded','false'); }
+    function openList(){
+      // calc direction
+      const rect = combo.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const estimatedHeight = Math.min(comboList.scrollHeight, 260) + 12; // padding
+      comboList.classList.add('open');
+      comboList.classList.toggle('drop-down', spaceBelow >= estimatedHeight || spaceBelow >= spaceAbove);
+      comboList.classList.toggle('drop-up', !(spaceBelow >= estimatedHeight || spaceBelow >= spaceAbove));
+      comboBtn.setAttribute('aria-expanded','true');
+      // scroll to selected
+      const sel = comboList.querySelector('[aria-selected="true"]');
+      if(sel) sel.scrollIntoView({block:'nearest'});
+    }
+    function setSelected(index){
+      nativeSelect.selectedIndex = index;
+      comboBtn.textContent = APP_NAMES[index];
+      comboList.querySelectorAll('.combo-option').forEach(el=>el.removeAttribute('aria-selected'));
+      const li = comboList.querySelector(`.combo-option[data-index="${index}"]`);
+      if(li) li.setAttribute('aria-selected','true');
+    }
+
+    // Clicks
+    comboBtn.addEventListener('click', (e)=>{
+      if(comboList.classList.contains('open')) closeList(); else openList();
+    });
+    comboList.addEventListener('click', (e)=>{
+      const li = e.target.closest('.combo-option'); if(!li) return;
+      setSelected(+li.dataset.index); closeList(); comboBtn.focus();
+    });
+    // Outside click
+    document.addEventListener('click', (e)=>{
+      if(!combo.contains(e.target)) closeList();
+    });
+    // Keyboard
+    comboBtn.addEventListener('keydown', (e)=>{
+      const k=e.key;
+      if(k==='ArrowDown' || k==='Enter' || k===' '){
+        e.preventDefault(); openList();
+      }
+    });
+    comboList.addEventListener('keydown', (e)=>{
+      const k=e.key;
+      const current = comboList.querySelector('[aria-selected="true"]');
+      let idx = current ? +current.dataset.index : nativeSelect.selectedIndex;
+      if(k==='ArrowDown'){ e.preventDefault(); idx = Math.min(APP_NAMES.length-1, idx+1); setSelected(idx); }
+      else if(k==='ArrowUp'){ e.preventDefault(); idx = Math.max(0, idx-1); setSelected(idx); }
+      else if(k==='Home'){ e.preventDefault(); setSelected(0); }
+      else if(k==='End'){ e.preventDefault(); setSelected(APP_NAMES.length-1); }
+      else if(k==='Enter'){ e.preventDefault(); closeList(); comboBtn.focus(); }
+      else if(k==='Escape'){ e.preventDefault(); closeList(); comboBtn.focus(); }
+    });
+
+    function valider2(){
+      const checked = document.querySelector('input[name="Env"]:checked');
+      const envIndex = checked ? +checked.value : 0;
+      const url = EnvApplication2[envIndex][nativeSelect.selectedIndex] || '';
+      if(!url){ alert("Erreur : URL indéfinie pour cet environnement."); return; }
+      window.open(url,'_blank','noopener');
+    }
+    openBtn.addEventListener('click', valider2);
+    // aussi sur Enter lorsque le bouton a le focus
+    openBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter') valider2(); });
+  </script>
+</body>
+</html>
